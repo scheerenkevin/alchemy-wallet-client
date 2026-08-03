@@ -45,6 +45,7 @@ lint = "ruff check ."
 format = "ruff format ."
 format-check = "ruff format --check ."
 test = "pytest {args:tests}"
+test-cov = "pytest --cov=alchemy_wallet_client --cov-report=term-missing --cov-report=xml {args:tests}"
 
 [tool.ruff]
 line-length = 100
@@ -56,3 +57,15 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["alchemy_wallet_client"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+]

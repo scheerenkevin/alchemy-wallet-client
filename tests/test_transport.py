@@ -145,3 +145,23 @@ def test_does_not_close_externally_provided_client() -> None:
 def test_rejects_negative_max_retries() -> None:
     with pytest.raises(ValueError):
         JsonRpcTransport(URL, max_retries=-1)
+
+
+@respx.mock
+def test_positive_backoff_factor_sleeps_between_retries(monkeypatch: pytest.MonkeyPatch) -> None:
+    sleep_calls: list[float] = []
+    monkeypatch.setattr(
+        "alchemy_wallet_client.transport.time.sleep", lambda seconds: sleep_calls.append(seconds)
+    )
+    route = respx.post(URL)
+    route.side_effect = [
+        httpx.Response(503),
+        httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": "ok"}),
+    ]
+    transport = JsonRpcTransport(URL, backoff_factor=0.1, max_retries=2)
+
+    result = transport.call("eth_sendUserOperation")
+
+    assert result == "ok"
+    assert sleep_calls == [0.1]  # 0.1 * 2**0 for the first (and only) retry
+    transport.close()

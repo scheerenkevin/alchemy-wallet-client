@@ -142,3 +142,93 @@ def test_context_manager_closes_owned_client() -> None:
     with GasManagerAdminClient("token", base_url=BASE_URL) as client:
         assert client._client.is_closed is False
     assert client._client.is_closed is True
+
+
+def test_does_not_close_externally_provided_client() -> None:
+    external_client = httpx.Client()
+    client = GasManagerAdminClient("token", base_url=BASE_URL, client=external_client)
+
+    client.close()
+
+    assert external_client.is_closed is False
+    external_client.close()
+
+
+@respx.mock
+def test_retries_on_transport_error_then_succeeds(client: GasManagerAdminClient) -> None:
+    route = respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1")
+    route.side_effect = [
+        httpx.ConnectError("connection refused"),
+        httpx.Response(200, json={"id": "policy-1"}),
+    ]
+
+    result = client.get_policy("policy-1")
+
+    assert result == {"id": "policy-1"}
+    assert route.call_count == 2
+    client.close()
+
+
+@respx.mock
+def test_raises_http_error_on_transport_error_after_retries_exhausted() -> None:
+    respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1").mock(
+        side_effect=httpx.ConnectError("connection refused")
+    )
+    client = GasManagerAdminClient(
+        "test-auth-token", base_url=BASE_URL, backoff_factor=0, max_retries=1
+    )
+
+    with pytest.raises(AlchemyHttpError):
+        client.get_policy("policy-1")
+
+    client.close()
+
+
+@respx.mock
+def test_raises_http_error_when_retryable_status_exhausts_retries(
+    client: GasManagerAdminClient,
+) -> None:
+    respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1").mock(return_value=httpx.Response(503))
+
+    with pytest.raises(AlchemyHttpError) as exc_info:
+        client.get_policy("policy-1")
+
+    assert exc_info.value.status_code == 503
+    client.close()
+
+
+@respx.mock
+def test_raises_http_error_on_invalid_json_body(client: GasManagerAdminClient) -> None:
+    respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1").mock(
+        return_value=httpx.Response(
+            200, content=b"not json", headers={"content-type": "text/plain"}
+        )
+    )
+
+    with pytest.raises(AlchemyHttpError):
+        client.get_policy("policy-1")
+
+    client.close()
+
+
+@respx.mock
+def test_positive_backoff_factor_sleeps_between_retries(monkeypatch: pytest.MonkeyPatch) -> None:
+    sleep_calls: list[float] = []
+    monkeypatch.setattr(
+        "alchemy_wallet_client.gas_manager_admin.time.sleep",
+        lambda seconds: sleep_calls.append(seconds),
+    )
+    route = respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1")
+    route.side_effect = [
+        httpx.Response(503),
+        httpx.Response(200, json={"id": "policy-1"}),
+    ]
+    client = GasManagerAdminClient(
+        "test-auth-token", base_url=BASE_URL, backoff_factor=0.1, max_retries=2
+    )
+
+    result = client.get_policy("policy-1")
+
+    assert result == {"id": "policy-1"}
+    assert sleep_calls == [0.1]
+    client.close()

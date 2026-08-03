@@ -8,6 +8,17 @@ This is an unofficial, community client — Alchemy ships an official
 TypeScript SDK but no official Python SDK.
 """
 
+from alchemy_wallet_client.config import (
+    DEFAULT_API_KEY_ENV_VAR,
+    AlchemyConfig,
+    MissingApiKeyError,
+)
+
 __version__ = "0.1.0"
 
-__all__ = ["__version__"]
+__all__ = [
+    "DEFAULT_API_KEY_ENV_VAR",
+    "AlchemyConfig",
+    "MissingApiKeyError",
+    "__version__",
+]

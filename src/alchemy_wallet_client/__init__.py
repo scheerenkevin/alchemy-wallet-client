@@ -8,6 +8,7 @@ This is an unofficial, community client — Alchemy ships an official
 TypeScript SDK but no official Python SDK.
 """
 
+from alchemy_wallet_client.bundler import BundlerClient
 from alchemy_wallet_client.config import (
     DEFAULT_API_KEY_ENV_VAR,
     AlchemyConfig,
@@ -30,6 +31,7 @@ __all__ = [
     "AlchemyHttpError",
     "AlchemyRpcError",
     "AlchemyTimeoutError",
+    "BundlerClient",
     "JsonRpcTransport",
     "MissingApiKeyError",
     "__version__",

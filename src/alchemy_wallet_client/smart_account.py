@@ -7,7 +7,7 @@ smart-contract implementation via a signed authorization).
 
 This module does **not** perform cryptographic signing — signing
 UserOperations and EIP-7702 authorizations is the caller's responsibility
-(e.g. via `eth_account` or KeeperOS's own key management), consistent with
+(e.g. via `eth_account` or evm_automation's own key management), consistent with
 this package being an HTTP client rather than a wallet/signing library.
 """
 

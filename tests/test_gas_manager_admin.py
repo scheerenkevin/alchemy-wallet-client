@@ -15,7 +15,7 @@ def client() -> GasManagerAdminClient:
 
 @respx.mock
 def test_create_policy(client: GasManagerAdminClient) -> None:
-    policy_in = {"policyName": "keeperos-base", "rules": {"maxSpendUsd": "100"}}
+    policy_in = {"policyName": "evm_automation-base", "rules": {"maxSpendUsd": "100"}}
     policy_out = {**policy_in, "id": "policy-1"}
     route = respx.post(f"{BASE_URL}/api/gasManager/policy").mock(
         return_value=httpx.Response(200, json=policy_out)
@@ -31,12 +31,14 @@ def test_create_policy(client: GasManagerAdminClient) -> None:
 @respx.mock
 def test_get_policy(client: GasManagerAdminClient) -> None:
     respx.get(f"{BASE_URL}/api/gasManager/policy/policy-1").mock(
-        return_value=httpx.Response(200, json={"id": "policy-1", "policyName": "keeperos-base"})
+        return_value=httpx.Response(
+            200, json={"id": "policy-1", "policyName": "evm_automation-base"}
+        )
     )
 
     result = client.get_policy("policy-1")
 
-    assert result == {"id": "policy-1", "policyName": "keeperos-base"}
+    assert result == {"id": "policy-1", "policyName": "evm_automation-base"}
     client.close()
 
 

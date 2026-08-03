@@ -12,12 +12,12 @@ under the hood, so this package wraps them directly over HTTP with `httpx` — a
 Python interface over Alchemy's existing public API surface, not a reimplementation of
 undocumented behavior.
 
-## Relationship to KeeperOS
+## Relationship to evm_automation
 
-This package is consumed by **KeeperOS** (`evm_automation`), an autonomous DeFi keeper
+This package is consumed by **evm_automation** (`evm_automation`), an autonomous DeFi keeper
 platform, as its executor-wallet dependency: EIP-7702-compatible smart accounts,
 submitting sponsored transactions across Base (primary), Ethereum, Arbitrum, Optimism,
-Polygon, BNB Chain, and Avalanche C-Chain. Alchemy is already KeeperOS's RPC provider,
+Polygon, BNB Chain, and Avalanche C-Chain. Alchemy is already evm_automation's RPC provider,
 so this consolidates on one vendor instead of adding a separate wallet-infra vendor
 (Coinbase CDP, Circle, Turnkey, etc. were evaluated and rejected for this reason).
 
@@ -65,7 +65,7 @@ url = build_rpc_url(Chain.BASE, config.api_key)
 # "https://base-mainnet.g.alchemy.com/v2/your-alchemy-api-key"
 ```
 
-`Chain` covers all seven chains KeeperOS operates on: `BASE`, `ETHEREUM`, `ARBITRUM`,
+`Chain` covers all seven chains evm_automation operates on: `BASE`, `ETHEREUM`, `ARBITRUM`,
 `OPTIMISM`, `POLYGON`, `BNB_CHAIN`, `AVALANCHE` (see the table below).
 
 ### Sending a UserOperation via the Bundler API
@@ -122,7 +122,7 @@ admin = GasManagerAdminClient(auth_token="your-gas-manager-admin-auth-token")
 
 policy = admin.create_policy(
     {
-        "policyName": "keeperos-base-sponsorship",
+        "policyName": "evm_automation-base-sponsorship",
         "rules": {"maxSpendUsd": "100"},
     }
 )
@@ -136,7 +136,7 @@ admin.close()
 
 This package builds and validates UserOperation/authorization *payloads* — it does not
 perform cryptographic signing. Signing is the caller's responsibility (e.g. via
-`eth_account` or KeeperOS's own key management).
+`eth_account` or evm_automation's own key management).
 
 ```python
 from alchemy_wallet_client import (

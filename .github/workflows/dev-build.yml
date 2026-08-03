@@ -1,0 +1,33 @@
+name: Dev Build
+
+# Runs on every merge to develop: validates that the package actually builds
+# (sdist + wheel) beyond just passing lint/tests. Does not publish anywhere.
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Hatch
+        run: pip install hatch
+
+      - name: Build package
+        run: hatch build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-dev-${{ github.sha }}
+          path: dist/
+          retention-days: 14

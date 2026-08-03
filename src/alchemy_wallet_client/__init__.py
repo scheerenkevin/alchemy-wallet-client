@@ -20,6 +20,7 @@ from alchemy_wallet_client.exceptions import (
     AlchemyRpcError,
     AlchemyTimeoutError,
 )
+from alchemy_wallet_client.gas_manager_admin import GasManagerAdminClient
 from alchemy_wallet_client.transport import JsonRpcTransport
 
 __version__ = "0.1.0"
@@ -32,6 +33,7 @@ __all__ = [
     "AlchemyRpcError",
     "AlchemyTimeoutError",
     "BundlerClient",
+    "GasManagerAdminClient",
     "JsonRpcTransport",
     "MissingApiKeyError",
     "__version__",

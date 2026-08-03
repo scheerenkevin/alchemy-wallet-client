@@ -9,6 +9,7 @@ TypeScript SDK but no official Python SDK.
 """
 
 from alchemy_wallet_client.bundler import BundlerClient
+from alchemy_wallet_client.chains import SUPPORTED_CHAINS, Chain, build_rpc_url, get_chain_by_id
 from alchemy_wallet_client.config import (
     DEFAULT_API_KEY_ENV_VAR,
     AlchemyConfig,
@@ -28,15 +29,19 @@ __version__ = "0.1.0"
 
 __all__ = [
     "DEFAULT_API_KEY_ENV_VAR",
+    "SUPPORTED_CHAINS",
     "AlchemyConfig",
     "AlchemyError",
     "AlchemyHttpError",
     "AlchemyRpcError",
     "AlchemyTimeoutError",
     "BundlerClient",
+    "Chain",
     "GasManagerAdminClient",
     "GasManagerSponsorshipClient",
     "JsonRpcTransport",
     "MissingApiKeyError",
+    "build_rpc_url",
+    "get_chain_by_id",
     "__version__",
 ]

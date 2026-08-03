@@ -13,12 +13,24 @@ from alchemy_wallet_client.config import (
     AlchemyConfig,
     MissingApiKeyError,
 )
+from alchemy_wallet_client.exceptions import (
+    AlchemyError,
+    AlchemyHttpError,
+    AlchemyRpcError,
+    AlchemyTimeoutError,
+)
+from alchemy_wallet_client.transport import JsonRpcTransport
 
 __version__ = "0.1.0"
 
 __all__ = [
     "DEFAULT_API_KEY_ENV_VAR",
     "AlchemyConfig",
+    "AlchemyError",
+    "AlchemyHttpError",
+    "AlchemyRpcError",
+    "AlchemyTimeoutError",
+    "JsonRpcTransport",
     "MissingApiKeyError",
     "__version__",
 ]

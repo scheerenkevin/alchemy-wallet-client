@@ -38,3 +38,6 @@ htmlcov/
 .env
 .env.*
 !.env.example
+
+# graphify knowledge-graph output (real destination is the claude_wiki vault)
+graphify-out/

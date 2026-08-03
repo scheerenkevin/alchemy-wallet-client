@@ -1,5 +1,5 @@
 """Multi-chain configuration: chain IDs and per-chain Alchemy RPC URL
-construction for the chains KeeperOS operates on — Base (primary),
+construction for the chains evm_automation operates on — Base (primary),
 Ethereum, Arbitrum, Optimism, Polygon, BNB Chain, and Avalanche C-Chain.
 
 Alchemy exposes both the standard `eth_*` JSON-RPC methods and the
@@ -79,7 +79,7 @@ def build_rpc_url(chain: Chain, api_key: str) -> str:
     return f"https://{info.alchemy_network}.g.alchemy.com/v2/{api_key}"
 
 
-#: All supported chains, in the order KeeperOS prioritizes them (Base first).
+#: All supported chains, in the order evm_automation prioritizes them (Base first).
 SUPPORTED_CHAINS: tuple[Chain, ...] = (
     Chain.BASE,
     Chain.ETHEREUM,

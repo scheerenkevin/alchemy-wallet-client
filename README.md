@@ -1,5 +1,11 @@
 # alchemy-wallet-client
 
+> **This repo is a read-only push-mirror** from
+> [Forgejo](https://git.cubealgos.de/kevin/alchemy-wallet-client), the real
+> source of truth. Issues are closed here; open them on the forge instead.
+> `pip install git+https://github.com/...` still works fine — this is only
+> about where development happens.
+
 Python client for Alchemy's server-side wallet / account-abstraction stack: the
 **Bundler API** (ERC-4337 JSON-RPC methods) and the **Gas Manager API** (REST Admin
 API + JSON-RPC sponsorship methods).

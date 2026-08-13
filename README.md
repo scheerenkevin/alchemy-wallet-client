@@ -177,6 +177,56 @@ user_op = merge_sponsorship_result(user_op, sponsorship_result)
 user_op_hash = bundler.send_user_operation(user_op, entry_point)
 ```
 
+### Session keys on a Modular Account V2
+
+A session key is a scoped signer on a Modular Account V2: allowlisted to specific
+contracts/methods, capped to a spend limit, and time-boxed — without granting full
+account control. Native, first-class support on Modular Account V2 is the reason
+evm_automation's treasury moved off Safe onto it (Safe needs a third-party ERC-7579
+module for the same thing). This wraps Alchemy's Wallet API `wallet_createSession`
+JSON-RPC method; like the EIP-7702 helpers above, it does not sign anything — the
+returned `signatureRequest` (EIP-712 typed data) must be signed by the account owner
+to activate the session, which is the caller's responsibility.
+
+```python
+from alchemy_wallet_client import (
+    ContractAccessPermission,
+    Erc20TokenTransferPermission,
+    JsonRpcTransport,
+    SessionKeyClient,
+    SessionKeySigner,
+    build_wallet_api_url,
+)
+
+session_key_client = SessionKeyClient(
+    JsonRpcTransport(build_wallet_api_url(config.api_key))
+)
+
+session = session_key_client.create_session(
+    account="0xYourModularAccountV2Address",
+    chain_id=8453,
+    signer=SessionKeySigner(public_key="0xYourScopedSignerAddress"),
+    permissions=[
+        # allowlist: only this Aave pool contract
+        ContractAccessPermission(address="0xAavePoolAddress"),
+        # spend limit: cap cumulative USDC spend
+        Erc20TokenTransferPermission(address="0xUsdcAddress", allowance="0x5f5e100"),
+    ],
+    expiry_sec=1_800_000_000,  # 0 means no expiry
+)
+# session["sessionId"], session["signatureRequest"] — sign signatureRequest as the
+# account owner to activate the session.
+
+session_key_client.close()
+```
+
+Once the session is active, UserOperations signed by the session key's own signer are
+ordinary UserOperations — submit them through the existing `BundlerClient` unchanged
+(see above), no separate submission path is needed. Other supported permission types:
+`RootPermission` (full access — defeats the point of scoping, included only for
+completeness), `FunctionsOnContractPermission` / `FunctionsOnAllContractsPermission`
+(selector-level allowlisting), `NativeTokenTransferPermission`, and `GasLimitPermission`.
+
 ### Error handling
 
 All errors derive from `AlchemyError`:
